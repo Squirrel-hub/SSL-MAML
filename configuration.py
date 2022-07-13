@@ -13,7 +13,7 @@ arg_parser.add_argument('--output_folder', type=str, default="output/",
 arg_parser.add_argument('--dataset', type=str, default='miniimagenet',
                         choices=['mnist', 'omniglot', 'miniimagenet', 'tieredimagenet', 'cifarfs', 'svhn'],
                         help='Name of the dataset (default: omniglot).')
-arg_parser.add_argument('--ratio', type=float, default=0.4,
+arg_parser.add_argument('--ratio', type=float, default=0.2,
                         help='ratio of labeled for each class in the task.')
 
 
