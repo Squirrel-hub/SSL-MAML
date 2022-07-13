@@ -42,16 +42,16 @@ arg_parser.add_argument('--num_ways', type=int, default=5,
                         help='Number of classes per task (N in "N-way").')
 arg_parser.add_argument('--num_shots', type=int, default=5,
                         help='Number of examples per class for support set (k in "k-shot").')
-arg_parser.add_argument('--num_shots_test_meta_train', type=int, default=15,
+arg_parser.add_argument('--num_shots_test_meta_train', type=int, default=5,
                         help='Number of examples per class for query set. If negative, same as `--num_shots`(default:15).')
-arg_parser.add_argument('--num_shots_test_meta_test', type=int, default=15,
+arg_parser.add_argument('--num_shots_test_meta_test', type=int, default=5,
                         help='Number of examples per class for query set. If negative, same as `--num_shots`(default:15).')
 
 
 # unlabeled part, for with and without distractor
-arg_parser.add_argument('--num_shots_unlabeled', type=int, default=20,
+arg_parser.add_argument('--num_shots_unlabeled', type=int, default=5,
                         help='Number of unlabeled example per class.')  # 200 for SVHN, 300 for MNIST, 20 for miniImagenet
-arg_parser.add_argument('--num_shots_unlabeled_evaluate', type=int, default=20,
+arg_parser.add_argument('--num_shots_unlabeled_evaluate', type=int, default=5,
                         help='Number of unlabeled example per class during meta-validation/test.')  # 200 for SVHN, 300 for MNIST, 20 for miniImagenet
 # unlabeled part, Scenario: distractor.
 arg_parser.add_argument('--num_classes_distractor', type=int, default=0,
@@ -75,11 +75,11 @@ arg_parser.add_argument('--hidden_size', type=int, default=64,
 # Optimization
 arg_parser.add_argument('--first_order', action='store_true',
                         help='Use the first order approximation, do not use higher-order derivatives during meta-optimization.')
-arg_parser.add_argument('--batch_size', type=int, default=4,
+arg_parser.add_argument('--batch_size', type=int, default=2,
                         help='Number of tasks in a batch of tasks for meta-training.')
-arg_parser.add_argument('--batch_size_val', type=int, default=4,
+arg_parser.add_argument('--batch_size_val', type=int, default=2,
                         help='Number of tasks in a batch of tasks for meta-validation.')
-arg_parser.add_argument('--batch_size_test', type=int, default=4,     # todo: check this later
+arg_parser.add_argument('--batch_size_test', type=int, default=2,     # todo: check this later
                         help='Number of tasks in a batch of tasks for meta-test.')
 
 
@@ -87,7 +87,7 @@ arg_parser.add_argument('--num_epochs', type=int, default=400,
                         help='Number of epochs of meta-training (default: 50).')
 arg_parser.add_argument('--num_batches', type=int, default=100,
                         help='Number of batch of tasks per epoch (default: 100).')
-arg_parser.add_argument('--step_size', type=float, default=0.001,
+arg_parser.add_argument('--step_size', type=float, default=0.01,
                         help='Size of the fast adaptation step, ie. learning rate in the '
                              'gradient descent update (default: 0.1).')
 arg_parser.add_argument('--meta_lr', type=float, default=0.0001,
