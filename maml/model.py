@@ -15,6 +15,33 @@ def conv_block(in_channels, out_channels, **kwargs):
         ('pool', nn.MaxPool2d(2))
     ]))
 
+class Projection_Head(nn.Module):
+    """
+    We opt for simplicity and adopt the commonly used ResNet (He et al., 2016) to obtain hi = f(x ̃i) = ResNet(x ̃i) where hi ∈ Rd is the output after the average pooling layer.
+    """
+
+    def __init__(self, n_features, projection_dim = 1):
+        super(Projection_Head, self).__init__()
+
+        #self.encoder = encoder
+        self.n_features = n_features
+
+
+        # We use a MLP with one hidden layer to obtain z_i = g(h_i) = W(2)σ(W(1)h_i) where σ is a ReLU non-linearity.
+        self.projector = nn.Sequential(
+            nn.Linear(self.n_features, self.n_features, bias=False),
+            nn.ReLU(),
+            nn.Linear(self.n_features, projection_dim, bias=False),
+        )
+
+    def forward(self, x_i, x_j):
+        #h_i = self.encoder(x_i)
+        #h_j = self.encoder(x_j)
+
+        z_i = self.projector(x_i)
+        z_j = self.projector(x_j)
+        return torch.dot(torch.squeeze(z_i,1),torch.squeeze(z_j,1))
+
 
 class MetaConvModel(MetaModule):
     """4-layer Convolutional Neural Network architecture from [1].
@@ -45,6 +72,7 @@ class MetaConvModel(MetaModule):
         self.out_features = out_features
         self.hidden_size = hidden_size
         self.feature_size = feature_size
+        self.projection_head = Projection_Head(out_features)
 
         self.features = MetaSequential(OrderedDict([
             ('layer1', conv_block(in_channels, hidden_size, kernel_size=3,
@@ -58,7 +86,7 @@ class MetaConvModel(MetaModule):
         ]))
         self.classifier = MetaLinear(feature_size, out_features, bias=True)
 
-    def forward(self, inputs, params=None, last=False, freeze=False): #modified for SMI function
+    def forward(self, inputs, params=None, Unlabeled = False, last=False, freeze=False): #modified for SMI function
         if freeze:
             with torch.no_grad():
                 features = self.features(inputs, params=self.get_subdict(params, 'features')) # if params is None, get_subdict returns None
@@ -70,10 +98,7 @@ class MetaConvModel(MetaModule):
 
         logits = self.classifier(features, params=self.get_subdict(params, 'classifier'))
 
-        if last:
-            return logits, features
-        else:
-            return logits
+        return logits
 
     def get_embedding_dim(self): #added for SMI function
         self.embDim = self.feature_size
